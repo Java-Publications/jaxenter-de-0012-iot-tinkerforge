@@ -12,7 +12,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 /**
  * Created by Sven Ruppert on 10.01.14.
@@ -55,6 +54,7 @@ public class HelloTinkerForge extends Application {
 
     public static class Worker extends Thread {
         final ObservableList seriesData;
+
         public Worker(final ObservableList seriesData) {
             setDaemon(true);
             setName("Thread Temp");
@@ -78,9 +78,9 @@ public class HelloTinkerForge extends Application {
                                     @Override
                                     public void run() {
                                         final double temp = temperature / 100.0;
-                                        System.out.println("Temperature: "+temp+" °C");
+                                        System.out.println("Temperature: " + temp + " °C");
                                         final int counter = seriesData.size() + 1;
-                                        System.out.println("counter = "+counter);
+                                        System.out.println("counter = " + counter);
                                         final XYChart.Data data = new XYChart.Data(new Date(), temp);
                                         seriesData.add(data);
 
