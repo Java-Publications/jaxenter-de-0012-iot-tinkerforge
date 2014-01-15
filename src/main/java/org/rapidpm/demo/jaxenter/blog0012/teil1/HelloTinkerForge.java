@@ -1,4 +1,4 @@
-package org.rapidpm.demo.jaxenter.blog0012;
+package org.rapidpm.demo.jaxenter.blog0012.teil1;
 
 import com.tinkerforge.*;
 import javafx.application.Application;
@@ -9,10 +9,10 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.stage.Stage;
+import org.rapidpm.demo.jaxenter.blog0012.DateAxis;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 /**
  * Created by Sven Ruppert on 10.01.14.
@@ -55,6 +55,7 @@ public class HelloTinkerForge extends Application {
 
     public static class Worker extends Thread {
         final ObservableList seriesData;
+
         public Worker(final ObservableList seriesData) {
             setDaemon(true);
             setName("Thread Temp");
@@ -78,9 +79,9 @@ public class HelloTinkerForge extends Application {
                                     @Override
                                     public void run() {
                                         final double temp = temperature / 100.0;
-                                        System.out.println("Temperature: "+temp+" °C");
+                                        System.out.println("Temperature: " + temp + " °C");
                                         final int counter = seriesData.size() + 1;
-                                        System.out.println("counter = "+counter);
+                                        System.out.println("counter = " + counter);
                                         final XYChart.Data data = new XYChart.Data(new Date(), temp);
                                         seriesData.add(data);
 
