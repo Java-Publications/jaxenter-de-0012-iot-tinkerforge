@@ -17,6 +17,10 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+import static com.tinkerforge.BrickletDualButton.LED_STATE_OFF;
+import static com.tinkerforge.BrickletDualButton.LED_STATE_ON;
+import static javafx.application.Platform.runLater;
+
 /**
  * Created by ts40 on 22.01.14.
  */
@@ -67,7 +71,7 @@ public class ButtonMaster extends Application {
         Scene scene = new Scene(vBox);
         stage.setScene(scene);
 
-        Platform.runLater(new Worker());
+        runLater(new Worker());
 
         stage.show();
 
@@ -81,47 +85,46 @@ public class ButtonMaster extends Application {
     }
 
 
-    public class Worker implements Runnable{
+    public class Worker implements Runnable {
         @Override
         public void run() {
             try {
                 ipcon.connect(host, port);
-                final BrickletDualButton.StateChangedListener changedListener
-                        = (buttonL, buttonR, ledL, ledR) -> Platform.runLater(() -> {
-                    String text = tx.getText();
-                    System.out.println("buttonL = " + buttonL);
-                    System.out.println("buttonR = " + buttonR);
+
+                db.addStateChangedListener((buttonL, buttonR, ledL, ledR) -> runLater(() -> {
                     if (buttonL == BrickletDualButton.BUTTON_STATE_PRESSED) {
-                        text = "Left button pressed".concat(newline).concat(text);
+                        setMsg("Left button pressed");
                         activateLeftButton();
                     }
-                    if(buttonL == BrickletDualButton.BUTTON_STATE_RELEASED){
-                        text = "Left button released".concat(newline).concat(text);
+                    if (buttonL == BrickletDualButton.BUTTON_STATE_RELEASED) {
+                        setMsg("Left button released");
                     }
                     if (buttonR == BrickletDualButton.BUTTON_STATE_PRESSED) {
-                        text = "Right button pressed".concat(newline).concat(text);
+                        setMsg("Right button pressed");
                         activateRightButton();
                     }
                     if (buttonR == BrickletDualButton.BUTTON_STATE_RELEASED) {
-                        text = "Right button released".concat(newline).concat(text);
+                        setMsg("Right button released");
                     }
-                    tx.setText(text);
-                });
+                }));
+                db.setLEDState(LED_STATE_ON, LED_STATE_ON);
 
-                db.addStateChangedListener(changedListener);
-                db.setLEDState(BrickletDualButton.LED_STATE_ON,BrickletDualButton.LED_STATE_ON );
-
-            } catch (IOException | AlreadyConnectedException | TimeoutException | NotConnectedException e) {
+            } catch (IOException
+                    | AlreadyConnectedException
+                    | TimeoutException
+                    | NotConnectedException e) {
                 e.printStackTrace();
-            } finally {
             }
+        }
+
+        private void setMsg(String msg) {
+            tx.setText(msg.concat(newline).concat(tx.getText()));
         }
     }
 
     private void activateRightButton() {
         try {
-            db.setLEDState(BrickletDualButton.LED_STATE_OFF,BrickletDualButton.LED_STATE_ON );
-
+            db.setLEDState(LED_STATE_OFF, LED_STATE_ON);
             bL.setText("InActive");
             bR.setText("Active");
         } catch (TimeoutException | NotConnectedException e) {
@@ -131,8 +134,7 @@ public class ButtonMaster extends Application {
 
     private void activateLeftButton() {
         try {
-            db.setLEDState(BrickletDualButton.LED_STATE_ON,BrickletDualButton.LED_STATE_OFF );
-
+            db.setLEDState(LED_STATE_ON, LED_STATE_OFF);
             bL.setText("Active");
             bR.setText("InActive");
 
