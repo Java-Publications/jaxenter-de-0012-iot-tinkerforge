@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
 import org.rapidpm.demo.jaxenter.blog0012.teil2.Barometer;
+import org.rapidpm.demo.jaxenter.blog0012.teil5.LCD20x4;
 
 import java.io.IOException;
 import java.util.Date;
@@ -16,9 +17,14 @@ public class Temp implements Runnable {
 
     private String UID;
     private ObservableList seriesData;
+    private int callbackPeriod;
 
-    public Temp(final String UID, final XYChart.Series series) {
+    private LCD20x4 lcd20x4 = new LCD20x4("jvX");
+
+
+    public Temp(final String UID, final XYChart.Series series, int callbackPeriod) {
         this.UID = UID;
+        this.callbackPeriod = callbackPeriod;
         this.seriesData = series.getData();
     }
 
@@ -29,14 +35,16 @@ public class Temp implements Runnable {
 
         try {
             ipcon.connect(Barometer.host, Barometer.port);
-            temp.setTemperatureCallbackPeriod(1000);
+            temp.setTemperatureCallbackPeriod(callbackPeriod);
             temp.addTemperatureListener(new BrickletTemperature.TemperatureListener() {
                 public void temperature(short temperature) {
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
                             final double temp = temperature / 100.0;
-                            System.out.println("Temperature: " + temp + " °C");
+                            final String text = "Temp  : " + temp + " °C";
+                            System.out.println(text);
+                            lcd20x4.printLine(0, text);
                             final XYChart.Data data = new XYChart.Data(new Date(), temp);
                             seriesData.add(data);
 
