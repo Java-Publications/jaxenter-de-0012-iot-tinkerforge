@@ -29,6 +29,7 @@ public class Barometer implements Runnable {
         try {
             ipcon.connect(Localhost.HOST, Localhost.PORT);
             b.setAirPressureCallbackPeriod(callbackPeriod);
+            b.setAltitudeCallbackPeriod(callbackPeriod);
             b.addAirPressureListener(airPressure -> {
                 final String text = "Air   : " + airPressure / 1000.0 + " mbar";
                 lcd20x4.printLine(1, text);

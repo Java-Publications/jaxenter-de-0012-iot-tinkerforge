@@ -37,7 +37,9 @@ public class Light implements Runnable {
                 final String text = "Lux   : " + lux + " Lux";
                 lcd20x4.printLine(3, text);
             });
-        } catch (IOException | AlreadyConnectedException | TimeoutException | NotConnectedException e) {
+        } catch (IOException
+                | AlreadyConnectedException
+                | TimeoutException | NotConnectedException e) {
             e.printStackTrace();
         }
     }

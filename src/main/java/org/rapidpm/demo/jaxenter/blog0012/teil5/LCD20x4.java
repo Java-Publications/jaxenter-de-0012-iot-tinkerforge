@@ -113,17 +113,12 @@ public class LCD20x4 {
                 if (!ks0066u.endsWith("x")) {
                     c = (char)0xff; // BLACK SQUARE
                 }
-
                 if (ks0066u.length() > 0) {
                     ks0066u = ks0066u.substring(0, ks0066u.length() - 1);
                 }
             }
-
             ks0066u += c;
         }
-
         return ks0066u;
     }
-
-
 }
