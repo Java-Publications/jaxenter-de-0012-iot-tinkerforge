@@ -21,7 +21,7 @@ import java.util.Date;
  * Created by Sven Ruppert on 13.01.14.
  */
 public class Barometer extends Application {
-    public static final String host = "localhost";
+    public static final String host = "192.168.0.200";
     public static final int port = 4223;
 
 
