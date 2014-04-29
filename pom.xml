@@ -33,6 +33,13 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.rapidpm.modul</groupId>
+                <artifactId>iot-tinkerforge</artifactId>
+                <version>2.0.2-SNAPSHOT</version>
+                <scope>compile</scope>
+            </dependency>
+
+            <dependency>
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>
                 <version>1.2.17</version>
@@ -99,6 +106,10 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>org.rapidpm.modul</groupId>
+            <artifactId>iot-tinkerforge</artifactId>
+        </dependency>
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
