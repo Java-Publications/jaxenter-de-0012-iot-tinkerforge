@@ -3,7 +3,6 @@ package org.rapidpm.demo.jaxenter.blog0012.teil1;
 import com.tinkerforge.*;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -11,7 +10,6 @@ import javafx.scene.chart.XYChart;
 import javafx.stage.Stage;
 import org.rapidpm.demo.jaxenter.blog0012.DateAxis;
 
-import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -19,82 +17,49 @@ import java.util.Date;
  */
 public class HelloTinkerForge extends Application {
 
-    private static final String host = "localhost";
-    private static final int port = 4223;
-    //    private static final String UID = "6Dct25"; // Change to your UID
-    private static final String UID = "dXj"; // Change to your UID
+  private static final String host = "localhost";
+  private static final int port = 4223;
+  private static final String UID = "dXj";
 
+  public static void main(String args[]) throws Exception {
+    IPConnection ipcon = new IPConnection();
+    BrickletTemperature temp = new BrickletTemperature(UID, ipcon);
+    ipcon.connect(host, port);
+    temp.setTemperatureCallbackPeriod(1000);
+    temp.addTemperatureListener(
+        temperature -> {
+          final double value = temperature / 100.0;
+          System.out.println("Temperature: " + value + " °C");
+          Platform.runLater(() -> {
+            final XYChart.Data data = new XYChart.Data( new Date(), value);
+            series.getData().add(data);
+          });
+        });
 
-    public static void main(String args[]) throws Exception {
-        launch(args);
-    }
+    launch(args);
 
-    public static XYChart.Series series;
+    ipcon.disconnect();
+  }
 
-    @Override
-    public void start(Stage stage) {
-        stage.setTitle("Line Chart TinkerForge Sample");
-        final DateAxis dateAxis = new DateAxis();
-        final NumberAxis yAxis = new NumberAxis();
-        dateAxis.setLabel("Time of Temp");
-        final LineChart<Date, Number> lineChart = new LineChart<>(dateAxis, yAxis);
+  public static XYChart.Series series;
 
-        lineChart.setTitle("Temp Monitoring");
+  @Override
+  public void start(Stage stage) throws Exception {
+    stage.setTitle("Line Chart TinkerForge Sample");
+    final DateAxis dateAxis = new DateAxis();
+    final NumberAxis yAxis = new NumberAxis();
+    dateAxis.setLabel("Time of Temp");
+    final LineChart lineChart = new LineChart<>(dateAxis, yAxis);
 
-        series = new XYChart.Series();
-        series.setName("My temps");
-        final ObservableList seriesData = series.getData();
+    lineChart.setTitle("Temp Monitoring");
 
-        lineChart.getData().add(series);
-        Scene scene = new Scene(lineChart, 800, 600);
-        stage.setScene(scene);
-        stage.show();
-        new Worker(seriesData).start();
+    series = new XYChart.Series();
+    series.setName("My temps");
 
-    }
-
-    public static class Worker extends Thread {
-        final ObservableList seriesData;
-
-        public Worker(final ObservableList seriesData) {
-            setDaemon(true);
-            setName("Thread Temp");
-            this.seriesData = seriesData;
-        }
-
-        @Override
-        public void run() {
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    IPConnection ipcon = new IPConnection();
-                    BrickletTemperature temp = new BrickletTemperature(UID, ipcon);
-
-                    try {
-                        ipcon.connect(host, port);
-                        temp.setTemperatureCallbackPeriod(1000);
-                        temp.addTemperatureListener(new BrickletTemperature.TemperatureListener() {
-                            public void temperature(short temperature) {
-                                Platform.runLater(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        final double temp = temperature / 100.0;
-                                        System.out.println("Temperature: " + temp + " °C");
-                                        final int counter = seriesData.size() + 1;
-                                        System.out.println("counter = " + counter);
-                                        final XYChart.Data data = new XYChart.Data(new Date(), temp);
-                                        seriesData.add(data);
-
-                                    }
-                                });
-                            }
-                        });
-                    } catch (IOException | AlreadyConnectedException | TimeoutException | NotConnectedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        }
-    }
+    lineChart.getData().add(series);
+    Scene scene = new Scene(lineChart, 800, 600);
+    stage.setScene(scene);
+    stage.show();
+  }
 }
 
